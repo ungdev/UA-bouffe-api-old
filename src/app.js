@@ -32,7 +32,7 @@ app.post('/orders', (req, res) => {
     const { category, code, price, effectivePrice, lowerPrice, name, status } = req.body
     models.Order.save({
         category,
-        code,
+        code: `${code}`,
         price,
         effectivePrice,
         lowerPrice,
