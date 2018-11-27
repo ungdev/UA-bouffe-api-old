@@ -1,1 +1,6 @@
-mode_module
+build/*
+npm-debug.log
+node_modules/*
+src/public/*
+rethinkdb_data/
+.env
