@@ -11,6 +11,8 @@ const Order = thinky.createModel('Order', {
     effectivePrice  : type.number(),
     lowerPrice      : type.number(),
     name            : type.string(),
+    buyerName       : type.string(),
+    buyerFirstName  : type.string(),
     status          : type.string(),
     removed         : type.boolean().default(false),
     createdAt       : type.date().default(new Date()),

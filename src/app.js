@@ -3,6 +3,7 @@ import socketio from 'socket.io';
 import bodyParser from 'body-parser';
 import path from 'path';
 import models from './models';
+import axios from './lib/axios'
 
 // Initialisation
 const app = express()
@@ -27,8 +28,14 @@ app.use((req, res, next) => {
     next();
 });
 
-app.post('/orders', (req, res) => {
-    console.log('Order received')
+app.post('/orders', async (req, res) => {
+    let buyer = null
+    try {
+      const res = await axios.get(`/bouffe/place/${req.body.code}`)
+      buyer = res.data
+    } catch (e) {
+      console.log(e.response.data)
+    }
     const { category, code, price, effectivePrice, lowerPrice, name, status } = req.body
     models.Order.save({
         category,
@@ -38,6 +45,8 @@ app.post('/orders', (req, res) => {
         lowerPrice,
         name,
         status,
+        buyerName: buyer ? buyer.name : `${code}`,
+        buyerFirstName: buyer ? buyer.firstname : '',
     }).then(result => {
       res.json(result)
     })
@@ -61,6 +70,8 @@ app.put('/orders/:id', (req, res) => {
       createdAt: inst.createdAt,
       status: req.body.status,
       removed: false,
+      buyerName: inst.buyerName,
+      buyerFirstName: inst.buyerFirstName
     }).then(result => {
       res.json(result)
     })
@@ -82,6 +93,8 @@ app.delete('/orders/:id', (req, res) => {
         createdAt: inst.createdAt,
         status: inst.status,
         removed: true,
+        buyerName: inst.buyerName,
+        buyerFirstName: inst.buyerFirstName
       }).then(result => {
         res.json(result)
       })
@@ -130,6 +143,5 @@ function updateStoreAndSend(node, store, feed) {
         }
 
         io.sockets.emit(node, store)
-        console.log('EMIT on', node)
     });
 }

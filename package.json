@@ -6,6 +6,7 @@
     "start": "gulp && node build/app"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "bcrypt": "^2.0.1",
     "body-parser": "^1.18.3",
     "dotenv": "^6.1.0",
@@ -17,8 +18,8 @@
     "react-dom": "^16.6.3",
     "rethinkdb": "^2.3.3",
     "socket.io": "^1.4.6",
-    "thinky": "^2.3.9",
     "source-map": "^0.7.3",
+    "thinky": "^2.3.9",
     "webpack": "^4.26.1"
   },
   "devDependencies": {
