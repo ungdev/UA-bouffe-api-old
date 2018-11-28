@@ -35,7 +35,7 @@ app.post('/orders', async (req, res) => {
       if(res)
         buyer = res.data
     } catch (e) {
-      console.log(e)
+      console.log(e.response)
     }
     const { category, code, price, effectivePrice, lowerPrice, name, status } = req.body
     models.Order.save({
