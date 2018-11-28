@@ -32,7 +32,8 @@ app.post('/orders', async (req, res) => {
     let buyer = null
     try {
       const res = await axios.get(`/bouffe/place/${req.body.code}`)
-      buyer = res.data
+      if(res)
+        buyer = res.data
     } catch (e) {
       console.log(e.response.data)
     }
