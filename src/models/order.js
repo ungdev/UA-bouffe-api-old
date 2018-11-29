@@ -25,7 +25,6 @@ const Order = thinky.createModel('Order', {
 
 Order.pre('save', function (next) {
     this.editedAt = new Date()
-    //this.createdAt = new Date()
     next();
 });
 

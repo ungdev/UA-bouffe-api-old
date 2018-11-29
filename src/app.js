@@ -48,6 +48,7 @@ app.post('/orders', async (req, res) => {
         status,
         buyerName: buyer ? buyer.name : `${code}`,
         buyerFirstName: buyer ? buyer.firstname : '',
+        createdAt: new Date()
     }).then(result => {
       res.json(result)
     })
