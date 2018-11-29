@@ -29,15 +29,16 @@ app.use((req, res, next) => {
 });
 
 app.post('/orders', async (req, res) => {
+  console.log(req.body)
     let buyer = null
     try {
       const res = await axios.get(`/bouffe/place/${req.body.code}`)
       if(res)
         buyer = res.data
     } catch (e) {
-      console.log(e.response)
+      console.log(e.response.data)
     }
-    const { category, code, price, effectivePrice, lowerPrice, name, status } = req.body
+    const { category, code, price, effectivePrice, lowerPrice, name, status, items } = req.body
     models.Order.save({
         category,
         code: `${code}`,
@@ -45,38 +46,25 @@ app.post('/orders', async (req, res) => {
         effectivePrice,
         lowerPrice,
         name,
+        items,
         status,
         buyerName: buyer ? buyer.name : `${code}`,
         buyerFirstName: buyer ? buyer.firstname : '',
-        createdAt: new Date()
+        createdAt: new Date(),
+        editedAt: new Date(),
     }).then(result => {
       res.json(result)
     })
     
 });
 app.get('/orders', (req, res) => {
-  res.json(orders)
+  //res.json(orders) //not used ?
 });
 
 app.put('/orders/:id', (req, res) => {
-  models.Order.get(req.params.id).run().then(inst => {
-    inst.delete()
-    models.Order.save({
-      id: inst.id,
-      category: inst.category,
-      code: inst.code,
-      price: inst.price,
-      effectivePrice: inst.effectivePrice,
-      lowerPrice: inst.lowerPrice,
-      name: inst.name,
-      createdAt: inst.createdAt,
-      status: req.body.status,
-      removed: false,
-      buyerName: inst.buyerName,
-      buyerFirstName: inst.buyerFirstName
-    }).then(result => {
-      res.json(result)
-    })
+  models.Order.get(req.params.id).update({ status: req.body.status }).run().then(result => {
+    console.log('UPDATE on', req.params.id)
+    res.json(result)
   })
 })
 
@@ -92,7 +80,9 @@ app.delete('/orders/:id', (req, res) => {
         effectivePrice: inst.effectivePrice,
         lowerPrice: inst.lowerPrice,
         name: inst.name,
+        items: inst.items,
         createdAt: inst.createdAt,
+        editedAt: inst.editedAt,
         status: inst.status,
         removed: true,
         buyerName: inst.buyerName,
