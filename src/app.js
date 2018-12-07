@@ -29,7 +29,6 @@ app.use((req, res, next) => {
 });
 
 app.post('/orders', async (req, res) => {
-  console.log(req.body)
     let buyer = null
     try {
       const res = await axios.get(`/bouffe/place/${req.body.code}`)
@@ -55,6 +54,7 @@ app.post('/orders', async (req, res) => {
     }).then(result => {
       res.json(result)
     })
+    .catch(e => console.log(e))
     
 });
 app.get('/orders', (req, res) => {
@@ -63,7 +63,6 @@ app.get('/orders', (req, res) => {
 
 app.put('/orders/:id', (req, res) => {
   models.Order.get(req.params.id).update({ status: req.body.status }).run().then(result => {
-    console.log('UPDATE on', req.params.id)
     res.json(result)
   })
 })
@@ -102,12 +101,14 @@ io.on('connection', socket => {
 -
 
 models.Order.execute().then(cursor => {
-  orders = cursor;
-});
+  orders = cursor
+})
+.catch(e => console.log(e))
 
 models.Order.changes().then(feed => {
   updateStoreAndSend('orders', orders, feed);
-});
+})
+.catch(e => console.log(e))
 
 // Fonctions
 function updateStoreAndSend(node, store, feed) {
