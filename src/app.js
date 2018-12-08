@@ -29,6 +29,7 @@ app.use((req, res, next) => {
 });
 
 app.post('/orders', async (req, res) => {
+  console.log('NEW ORDER')
     let buyer = null
     try {
       const res = await axios.get(`/bouffe/place/${req.body.code}`)
@@ -62,21 +63,21 @@ app.get('/orders', (req, res) => {
 });
 
 app.put('/orders/:id', (req, res) => {
+  console.log('PUT')
   models.Order.get(req.params.id).update({ status: req.body.status }).run().then(result => {
     res.json(result)
   }).catch(e => console.log(e))
 })
 
 app.delete('/orders/:id', (req, res) => {
+  console.log('DELETE', req.body)
   if (req.body.force) {
-    models.Order.get(req.params.id).run().then(inst => {
-      inst.delete()
-    }).catch(e => console.log(e))
+    models.Order.get(req.params.id).delete().run().catch(e => console.log(e))
+    console.log('DELETE')
   }
   else {
-    models.Order.get(req.params.id).update({ removed: true }).run().then(result => {
-      res.json(result)
-    }).catch(e => console.log(e))
+    models.Order.get(req.params.id).update({ removed: true }).run().catch(e => console.log(e))
+    console.log('UPDATE', req.params.id)
   }
 })
 
