@@ -70,7 +70,7 @@ app.put('/orders/:id', (req, res) => {
 })
 
 app.delete('/orders/:id', (req, res) => {
-  console.log('DELETE', req.body)
+  console.log('DELETE', req.params.id)
   if (req.body.force) {
     models.Order.get(req.params.id).delete().run().catch(e => console.log(e))
     console.log('DELETE')
