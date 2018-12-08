@@ -53,7 +53,7 @@ app.post('/orders', async (req, res) => {
         createdAt: new Date(),
         editedAt: new Date(),
     }).then(result => {
-      res.json(result)
+      res.status(200).json(result).end()
     })
     .catch(e => console.log(e))
     
@@ -65,20 +65,37 @@ app.get('/orders', (req, res) => {
 app.put('/orders/:id', (req, res) => {
   console.log('PUT')
   models.Order.get(req.params.id).update({ status: req.body.status }).run().then(result => {
-    res.json(result)
+    res.status(200).json(result).end()
   }).catch(e => console.log(e))
 })
 
 app.delete('/orders/:id', (req, res) => {
-  console.log('DELETE', req.params.id)
-  if (req.body.force) {
-    models.Order.get(req.params.id).delete().run().catch(e => console.log(e))
-    console.log('DELETE')
+  try {
+    console.log('DELETE', req.params.id)
+    if (req.body.force) {
+      models.Order.get(req.params.id).delete().run().then(function() {
+        return res
+        .status(200)
+        .end()
+      });
+      console.log('DELETE')
+    }
+    else {
+      models.Order.get(req.params.id).update({ removed: true }).run().then(function() {
+        return res
+        .status(200)
+        .end()
+      });
+      console.log('UPDATE', req.params.id);
+    }
+  } catch(e) {
+    return res
+    .status(500)
+    .json(e)
+    .end();
   }
-  else {
-    models.Order.get(req.params.id).update({ removed: true }).run().catch(e => console.log(e))
-    console.log('UPDATE', req.params.id)
-  }
+  
+  
 })
 
 // Evenements socket.io
