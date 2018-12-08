@@ -64,33 +64,20 @@ app.get('/orders', (req, res) => {
 app.put('/orders/:id', (req, res) => {
   models.Order.get(req.params.id).update({ status: req.body.status }).run().then(result => {
     res.json(result)
-  })
+  }).catch(e => console.log(e))
 })
 
 app.delete('/orders/:id', (req, res) => {
-  models.Order.get(req.params.id).run().then(inst => {
-    inst.delete()
-    if(!req.body.force){
-      models.Order.save({
-        id: inst.id,
-        category: inst.category,
-        code: inst.code,
-        price: inst.price,
-        effectivePrice: inst.effectivePrice,
-        lowerPrice: inst.lowerPrice,
-        name: inst.name,
-        items: inst.items,
-        createdAt: inst.createdAt,
-        editedAt: inst.editedAt,
-        status: inst.status,
-        removed: true,
-        buyerName: inst.buyerName,
-        buyerFirstName: inst.buyerFirstName
-      }).then(result => {
-        res.json(result)
-      })
-    }
-  })
+  if (req.body.force) {
+    models.Order.get(req.params.id).run().then(inst => {
+      inst.delete()
+    }).catch(e => console.log(e))
+  }
+  else {
+    models.Order.get(req.params.id).update({ removed: true }).run().then(result => {
+      res.json(result)
+    }).catch(e => console.log(e))
+  }
 })
 
 // Evenements socket.io
@@ -98,7 +85,7 @@ io.on('connection', socket => {
     console.log('Client connected')
     io.sockets.emit('orders', orders)
 });
--
+
 
 models.Order.execute().then(cursor => {
   orders = cursor
